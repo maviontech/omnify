@@ -1,0 +1,213 @@
+{% extends 'base.html' %}
+
+{% block title %}Omnify - Everything. Organized.{% endblock %}
+
+{% block content %}
+<div class="hero">
+    <div class="hero-content text-center">
+        <h1 class="hero-title">Everything. Organized.</h1>
+        <p class="hero-subtitle">
+            Omnify is the universal operations platform that adapts to any business.<br>
+            Manage inventory, workflows, billing, and more - all in one place.
+        </p>
+        <div class="hero-actions">
+            <a href="/admin/" class="btn btn-primary btn-lg">Get Started</a>
+            <a href="#industries" class="btn btn-secondary btn-lg">Explore Industries</a>
+        </div>
+    </div>
+</div>
+
+<section id="industries" class="section">
+    <div class="section-header text-center">
+        <h2>Built for Every Industry</h2>
+        <p class="text-muted">Choose your industry and start organizing in minutes</p>
+    </div>
+    
+    <div class="grid grid-4 mt-xl">
+        {% for tenant in tenants %}
+        <div class="card industry-card">
+            <div class="industry-icon">
+                {% if tenant.industry == 'hospital' %}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2L2 7v10c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V7l-10-5z"/>
+                        <path d="M12 8v8M8 12h8"/>
+                    </svg>
+                {% elif tenant.industry == 'factory' %}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M2 20h20M3 20V9l4-4v5l4-4v5l4-4v10"/>
+                    </svg>
+                {% elif tenant.industry == 'clinic' %}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 2v20M2 12h20"/>
+                    </svg>
+                {% elif tenant.industry == 'library' %}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 19.5A2.5 2.5 0 0 0 6.5 22H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15z"/>
+                    </svg>
+                {% elif tenant.industry == 'school' %}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 10v6M2 10l10-5 10 5-10 5z"/>
+                        <path d="M6 12v5c3 3 9 3 12 0v-5"/>
+                    </svg>
+                {% elif tenant.industry == 'retail' %}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="21" r="1"/>
+                        <circle cx="20" cy="21" r="1"/>
+                        <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/>
+                    </svg>
+                {% elif tenant.industry == 'restaurant' %}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3zm0 0v7"/>
+                    </svg>
+                {% else %}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                    </svg>
+                {% endif %}
+            </div>
+            <h3 class="card-title">{{ tenant.name }}</h3>
+            <p class="text-muted">{{ tenant.get_industry_display }}</p>
+            <div class="card-actions mt-md">
+                <a href="/admin/" class="btn btn-primary">Access Dashboard</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+
+<section class="section features-section">
+    <div class="section-header text-center">
+        <h2>Powerful Features</h2>
+        <p class="text-muted">Everything you need to manage your operations</p>
+    </div>
+    
+    <div class="grid grid-3 mt-xl">
+        <div class="card">
+            <h4>📦 Inventory Management</h4>
+            <p class="text-muted">Track items, quantities, locations, and movements with real-time updates.</p>
+        </div>
+        
+        <div class="card">
+            <h4>🔄 Workflow Automation</h4>
+            <p class="text-muted">Create custom workflows with states, transitions, and automated actions.</p>
+        </div>
+        
+        <div class="card">
+            <h4>👥 Role-Based Access</h4>
+            <p class="text-muted">Granular permissions with hierarchical roles for complete control.</p>
+        </div>
+        
+        <div class="card">
+            <h4>📊 Reports & Analytics</h4>
+            <p class="text-muted">Generate insights with customizable reports and real-time dashboards.</p>
+        </div>
+        
+        <div class="card">
+            <h4>🔔 Smart Notifications</h4>
+            <p class="text-muted">Stay informed with email, in-app, and webhook notifications.</p>
+        </div>
+        
+        <div class="card">
+            <h4>🔌 REST API</h4>
+            <p class="text-muted">Integrate with your existing tools using our comprehensive API.</p>
+        </div>
+    </div>
+</section>
+
+<section class="section cta-section text-center">
+    <h2>Ready to Get Organized?</h2>
+    <p class="text-muted mb-xl">Start managing your operations with Omnify today.</p>
+    <a href="/admin/" class="btn btn-primary btn-lg">Access Admin Panel</a>
+</section>
+
+<style>
+.hero {
+    padding: var(--spacing-3xl) 0;
+    background: linear-gradient(135deg, #0066FF 0%, #0052CC 100%);
+    color: var(--white);
+    border-radius: var(--radius-xl);
+    margin-bottom: var(--spacing-3xl);
+}
+
+.hero-content {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-lg);
+}
+
+.hero-title {
+    font-size: 4rem;
+    font-weight: 800;
+    margin-bottom: var(--spacing-lg);
+    color: var(--white);
+}
+
+.hero-subtitle {
+    font-size: 1.25rem;
+    margin-bottom: var(--spacing-xl);
+    opacity: 0.95;
+}
+
+.hero-actions {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+}
+
+.section {
+    margin-bottom: var(--spacing-3xl);
+}
+
+.section-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.section-header h2 {
+    font-size: 2.5rem;
+    margin-bottom: var(--spacing-sm);
+}
+
+.industry-card {
+    text-align: center;
+}
+
+.industry-icon {
+    width: 80px;
+    height: 80px;
+    margin: 0 auto var(--spacing-md);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--gray-100);
+    border-radius: var(--radius-full);
+    color: var(--omnify-blue);
+}
+
+.card-actions {
+    display: flex;
+    justify-content: center;
+}
+
+.features-section {
+    background: var(--white);
+    padding: var(--spacing-3xl);
+    border-radius: var(--radius-xl);
+}
+
+.cta-section {
+    padding: var(--spacing-3xl);
+    background: var(--gray-100);
+    border-radius: var(--radius-xl);
+}
+
+@media (max-width: 768px) {
+    .hero-title {
+        font-size: 2.5rem;
+    }
+    
+    .hero-actions {
+        flex-direction: column;
+    }
+}
+</style>
+{% endblock %}

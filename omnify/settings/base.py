@@ -52,6 +52,9 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # Omnify middleware
+    'apps.tenants.middleware.TenantMiddleware',
+    'apps.core.middleware.AuditLogMiddleware',
 ]
 
 ROOT_URLCONF = 'omnify.urls'
@@ -108,8 +111,8 @@ STATICFILES_DIRS = [BASE_DIR / 'static']
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-# Custom user model (will be created later)
-# AUTH_USER_MODEL = 'users.User'
+# Custom user model
+AUTH_USER_MODEL = 'users.User'
 
 # REST Framework settings
 REST_FRAMEWORK = {

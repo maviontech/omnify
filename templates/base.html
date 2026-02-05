@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>{% block title %}Omnify - Everything. Organized.{% endblock %}</title>
+    
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Styles -->
+    <link rel="stylesheet" href="/static/css/base.css">
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    {% block body %}
+    <div class="app-container">
+        {% block header %}
+        <header class="app-header">
+            <div class="header-content">
+                <div class="logo">
+                    <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="20" cy="20" r="18" stroke="#0066FF" stroke-width="4"/>
+                        <text x="20" y="26" font-family="Poppins" font-weight="700" font-size="16" fill="#0066FF" text-anchor="middle">O</text>
+                    </svg>
+                    <span class="logo-text">Omnify</span>
+                </div>
+                
+                <nav class="main-nav">
+                    {% block nav %}
+                    <a href="/" class="nav-link">Home</a>
+                    <a href="/dashboard/" class="nav-link">Dashboard</a>
+                    <a href="/admin/" class="nav-link">Admin</a>
+                    {% endblock %}
+                </nav>
+                
+                <div class="header-actions">
+                    {% if user.is_authenticated %}
+                        <span class="user-info">{{ user.get_full_name }}</span>
+                        <a href="/admin/logout/" class="btn btn-secondary">Logout</a>
+                    {% else %}
+                        <a href="/admin/login/" class="btn btn-primary">Login</a>
+                    {% endif %}
+                </div>
+            </div>
+        </header>
+        {% endblock %}
+        
+        <main class="app-main">
+            {% block content %}{% endblock %}
+        </main>
+        
+        {% block footer %}
+        <footer class="app-footer">
+            <div class="footer-content">
+                <p>&copy; 2026 Omnify. Everything. Organized.</p>
+                <div class="footer-links">
+                    <a href="#">Privacy</a>
+                    <a href="#">Terms</a>
+                    <a href="#">Support</a>
+                </div>
+            </div>
+        </footer>
+        {% endblock %}
+    </div>
+    {% endblock %}
+    
+    <!-- Scripts -->
+    <script src="/static/js/app.js"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

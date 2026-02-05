@@ -1,0 +1,183 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard - Omnify{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <h1>Dashboard</h1>
+    {% if tenant %}
+    <p class="text-muted">Welcome to {{ tenant.name }}</p>
+    {% endif %}
+</div>
+
+<div class="grid grid-4 mt-xl">
+    <div class="card stat-card">
+        <div class="stat-icon" style="background: #E3F2FD;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#0066FF" stroke-width="2">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+            </svg>
+        </div>
+        <div class="stat-content">
+            <h3 class="stat-value">0</h3>
+            <p class="stat-label">Total Users</p>
+        </div>
+    </div>
+    
+    <div class="card stat-card">
+        <div class="stat-icon" style="background: #E8F5E9;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#00C853" stroke-width="2">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+            </svg>
+        </div>
+        <div class="stat-content">
+            <h3 class="stat-value">0</h3>
+            <p class="stat-label">Total Items</p>
+        </div>
+    </div>
+    
+    <div class="card stat-card">
+        <div class="stat-icon" style="background: #FFF3E0;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#FF9800" stroke-width="2">
+                <path d="M16 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+                <circle cx="8.5" cy="7" r="4"/>
+                <path d="M20 8v6M23 11h-6"/>
+            </svg>
+        </div>
+        <div class="stat-content">
+            <h3 class="stat-value">0</h3>
+            <p class="stat-label">Transactions</p>
+        </div>
+    </div>
+    
+    <div class="card stat-card">
+        <div class="stat-icon" style="background: #FCE4EC;">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#F44336" stroke-width="2">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+            </svg>
+        </div>
+        <div class="stat-content">
+            <h3 class="stat-value">0</h3>
+            <p class="stat-label">Locations</p>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-2 mt-xl">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Quick Actions</h3>
+        </div>
+        <div class="card-body">
+            <div class="action-list">
+                <a href="/admin/items/item/add/" class="action-item">
+                    <span>➕ Add New Item</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="/admin/transactions/transaction/add/" class="action-item">
+                    <span>📝 Create Transaction</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="/admin/locations/location/add/" class="action-item">
+                    <span>📍 Add Location</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="/admin/users/user/add/" class="action-item">
+                    <span>👤 Add User</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-header">
+            <h3 class="card-title">Recent Activity</h3>
+        </div>
+        <div class="card-body">
+            <p class="text-muted text-center" style="padding: var(--spacing-xl) 0;">
+                No recent activity yet. Start by adding items or creating transactions.
+            </p>
+        </div>
+    </div>
+</div>
+
+<style>
+.dashboard-header {
+    margin-bottom: var(--spacing-xl);
+}
+
+.dashboard-header h1 {
+    margin-bottom: var(--spacing-xs);
+}
+
+.stat-card {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.stat-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: var(--radius-lg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stat-content {
+    flex: 1;
+}
+
+.stat-value {
+    font-size: 2rem;
+    font-weight: 700;
+    margin: 0;
+    color: var(--omnify-dark);
+}
+
+.stat-label {
+    font-size: 0.875rem;
+    color: var(--gray-600);
+    margin: 0;
+}
+
+.action-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-sm);
+}
+
+.action-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--spacing-md);
+    background: var(--gray-50);
+    border-radius: var(--radius-md);
+    color: var(--gray-800);
+    transition: all var(--transition-fast);
+}
+
+.action-item:hover {
+    background: var(--omnify-blue);
+    color: var(--white);
+    transform: translateX(4px);
+}
+
+.action-item svg {
+    opacity: 0.5;
+}
+</style>
+{% endblock %}
