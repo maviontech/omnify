@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+{% load custom_filters %}
+
+{% block title %}{{ item.name }} - Omnify{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ item.name }}</h1>
+    <div>
+        <a href="{% url 'item_edit' item.pk %}" class="btn btn-primary">Edit Item</a>
+        <a href="{% url 'item_list' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="detail-grid">
+    <div class="detail-card">
+        <h2>Basic Information</h2>
+        <div class="detail-row">
+            <span class="detail-label">Code:</span>
+            <span class="detail-value"><strong>{{ item.code }}</strong></span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Name:</span>
+            <span class="detail-value">{{ item.name }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Type:</span>
+            <span class="detail-value">{{ item.item_type.name }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Description:</span>
+            <span class="detail-value">{{ item.description|default:"N/A" }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Status:</span>
+            <span class="detail-value">
+                <span class="badge badge-{% if item.status == 'active' %}success{% else %}secondary{% endif %}">
+                    {{ item.get_status_display }}
+                </span>
+            </span>
+        </div>
+    </div>
+
+    <div class="detail-card">
+        <h2>Inventory</h2>
+        <div class="detail-row">
+            <span class="detail-label">Quantity:</span>
+            <span class="detail-value">
+                <strong>{{ item.quantity|floatformat:0 }} {{ item.unit }}</strong>
+                {% if item.is_low_stock %}
+                <span class="badge badge-warning">Low Stock</span>
+                {% endif %}
+            </span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Location:</span>
+            <span class="detail-value">
+                <a href="{% url 'location_detail' item.location.pk %}">{{ item.location.get_full_path }}</a>
+            </span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Reorder Point:</span>
+            <span class="detail-value">{{ item.reorder_point|default:"Not set" }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Reorder Quantity:</span>
+            <span class="detail-value">{{ item.reorder_quantity|default:"Not set" }}</span>
+        </div>
+    </div>
+
+    <div class="detail-card">
+        <h2>Pricing</h2>
+        <div class="detail-row">
+            <span class="detail-label">Unit Cost:</span>
+            <span class="detail-value">${{ item.unit_cost|default:"0.00"|floatformat:2 }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Selling Price:</span>
+            <span class="detail-value">${{ item.selling_price|default:"0.00"|floatformat:2 }}</span>
+        </div>
+        {% if item.quantity and item.unit_cost %}
+        <div class="detail-row">
+            <span class="detail-label">Total Value:</span>
+            <span class="detail-value">
+                <strong>${{ item.quantity|mul:item.unit_cost|floatformat:2 }}</strong>
+            </span>
+        </div>
+        {% endif %}
+    </div>
+
+    {% if custom_values %}
+    <div class="detail-card">
+        <h2>Custom Fields</h2>
+        {% for cv in custom_values %}
+        <div class="detail-row">
+            <span class="detail-label">{{ cv.custom_field.name }}:</span>
+            <span class="detail-value">{{ cv.get_value|default:"N/A" }}</span>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="detail-card">
+        <h2>Metadata</h2>
+        <div class="detail-row">
+            <span class="detail-label">Created:</span>
+            <span class="detail-value">{{ item.created_at|date:"M d, Y H:i" }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Last Updated:</span>
+            <span class="detail-value">{{ item.updated_at|date:"M d, Y H:i" }}</span>
+        </div>
+        {% if item.created_by %}
+        <div class="detail-row">
+            <span class="detail-label">Created By:</span>
+            <span class="detail-value">{{ item.created_by.email }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

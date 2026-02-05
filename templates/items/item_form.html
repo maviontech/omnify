@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if item %}Edit{% else %}Create{% endif %} Item - Omnify{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% if item %}Edit Item{% else %}Create New Item{% endif %}</h1>
+    <a href="{% if item %}{% url 'item_detail' item.pk %}{% else %}{% url 'item_list' %}{% endif %}" class="btn btn-secondary">Cancel</a>
+</div>
+
+<div class="form-container">
+    <form method="post" class="form">
+        {% csrf_token %}
+        
+        <div class="form-section">
+            <h2>Basic Information</h2>
+            
+            <div class="form-group">
+                <label for="item_type">Item Type *</label>
+                <select name="item_type" id="item_type" required class="form-control">
+                    <option value="">Select Type</option>
+                    {% for type in item_types %}
+                    <option value="{{ type.id }}" {% if item and item.item_type.id == type.id %}selected{% endif %}>
+                        {{ type.name }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="code">Item Code *</label>
+                <input type="text" name="code" id="code" value="{{ item.code|default:'' }}" required class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="name">Name *</label>
+                <input type="text" name="name" id="name" value="{{ item.name|default:'' }}" required class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="description">Description</label>
+                <textarea name="description" id="description" rows="3" class="form-control">{{ item.description|default:'' }}</textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select name="status" id="status" class="form-control">
+                    <option value="active" {% if not item or item.status == 'active' %}selected{% endif %}>Active</option>
+                    <option value="inactive" {% if item and item.status == 'inactive' %}selected{% endif %}>Inactive</option>
+                    <option value="discontinued" {% if item and item.status == 'discontinued' %}selected{% endif %}>Discontinued</option>
+                    <option value="pending" {% if item and item.status == 'pending' %}selected{% endif %}>Pending</option>
+                </select>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h2>Inventory</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="quantity">Quantity *</label>
+                    <input type="number" name="quantity" id="quantity" value="{{ item.quantity|default:'0' }}" step="0.001" required class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="unit">Unit</label>
+                    <input type="text" name="unit" id="unit" value="{{ item.unit|default:'pieces' }}" class="form-control">
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label for="location">Location *</label>
+                <select name="location" id="location" required class="form-control">
+                    <option value="">Select Location</option>
+                    {% for loc in locations %}
+                    <option value="{{ loc.id }}" {% if item and item.location.id == loc.id %}selected{% endif %}>
+                        {{ loc.get_full_path }}
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="reorder_point">Reorder Point</label>
+                    <input type="number" name="reorder_point" id="reorder_point" value="{{ item.reorder_point|default:'' }}" step="0.001" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="reorder_quantity">Reorder Quantity</label>
+                    <input type="number" name="reorder_quantity" id="reorder_quantity" value="{{ item.reorder_quantity|default:'' }}" step="0.001" class="form-control">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h2>Pricing</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="unit_cost">Unit Cost</label>
+                    <input type="number" name="unit_cost" id="unit_cost" value="{{ item.unit_cost|default:'' }}" step="0.01" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="selling_price">Selling Price</label>
+                    <input type="number" name="selling_price" id="selling_price" value="{{ item.selling_price|default:'' }}" step="0.01" class="form-control">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if item %}Update{% else %}Create{% endif %} Item</button>
+            <a href="{% if item %}{% url 'item_detail' item.pk %}{% else %}{% url 'item_list' %}{% endif %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

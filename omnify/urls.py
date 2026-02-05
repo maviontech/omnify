@@ -19,11 +19,25 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from apps.core.views import HomeView, DashboardView
+from apps.items.views import ItemListView, ItemDetailView, item_create, item_edit
+from apps.locations.views import LocationListView, LocationDetailView, location_create, location_edit
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', HomeView.as_view(), name='home'),
     path('dashboard/', DashboardView.as_view(), name='dashboard'),
+    
+    # Items
+    path('items/', ItemListView.as_view(), name='item_list'),
+    path('items/<uuid:pk>/', ItemDetailView.as_view(), name='item_detail'),
+    path('items/create/', item_create, name='item_create'),
+    path('items/<uuid:pk>/edit/', item_edit, name='item_edit'),
+    
+    # Locations
+    path('locations/', LocationListView.as_view(), name='location_list'),
+    path('locations/<uuid:pk>/', LocationDetailView.as_view(), name='location_detail'),
+    path('locations/create/', location_create, name='location_create'),
+    path('locations/<uuid:pk>/edit/', location_edit, name='location_edit'),
 ]
 
 # Serve media files in development

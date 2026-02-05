@@ -1,0 +1,214 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ location.name }} - Omnify{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{{ location.name }}</h1>
+    <div>
+        <a href="{% url 'location_edit' location.pk %}" class="btn btn-primary">Edit Location</a>
+        <a href="{% url 'location_list' %}" class="btn btn-secondary">Back to List</a>
+    </div>
+</div>
+
+<div class="detail-grid">
+    <div class="detail-card">
+        <h2>Basic Information</h2>
+        <div class="detail-row">
+            <span class="detail-label">Code:</span>
+            <span class="detail-value"><strong>{{ location.code }}</strong></span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Name:</span>
+            <span class="detail-value">{{ location.name }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Type:</span>
+            <span class="detail-value">{{ location.get_location_type_display }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Full Path:</span>
+            <span class="detail-value">{{ location.get_full_path }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Parent:</span>
+            <span class="detail-value">
+                {% if location.parent %}
+                <a href="{% url 'location_detail' location.parent.pk %}">{{ location.parent.name }}</a>
+                {% else %}
+                None (Root Location)
+                {% endif %}
+            </span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Status:</span>
+            <span class="detail-value">
+                <span class="badge badge-{% if location.is_active %}success{% else %}secondary{% endif %}">
+                    {% if location.is_active %}Active{% else %}Inactive{% endif %}
+                </span>
+            </span>
+        </div>
+    </div>
+
+    {% if location.address or location.city %}
+    <div class="detail-card">
+        <h2>Address</h2>
+        {% if location.address %}
+        <div class="detail-row">
+            <span class="detail-label">Address:</span>
+            <span class="detail-value">{{ location.address }}</span>
+        </div>
+        {% endif %}
+        <div class="detail-row">
+            <span class="detail-label">City:</span>
+            <span class="detail-value">{{ location.city|default:"—" }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">State:</span>
+            <span class="detail-value">{{ location.state|default:"—" }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Postal Code:</span>
+            <span class="detail-value">{{ location.postal_code|default:"—" }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Country:</span>
+            <span class="detail-value">{{ location.country|default:"—" }}</span>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="detail-card">
+        <h2>Capacity</h2>
+        <div class="detail-row">
+            <span class="detail-label">Capacity:</span>
+            <span class="detail-value">
+                {% if location.capacity %}
+                {{ location.capacity|floatformat:0 }} {{ location.capacity_unit }}
+                {% else %}
+                Not set
+                {% endif %}
+            </span>
+        </div>
+        {% if utilization %}
+        <div class="detail-row">
+            <span class="detail-label">Utilization:</span>
+            <span class="detail-value">
+                <strong>{{ utilization|floatformat:1 }}%</strong>
+                {% if utilization > 90 %}
+                <span class="badge badge-danger">High</span>
+                {% elif utilization > 70 %}
+                <span class="badge badge-warning">Medium</span>
+                {% else %}
+                <span class="badge badge-success">Low</span>
+                {% endif %}
+            </span>
+        </div>
+        {% endif %}
+        <div class="detail-row">
+            <span class="detail-label">Items Stored:</span>
+            <span class="detail-value">{{ item_count }}</span>
+        </div>
+    </div>
+
+    <div class="detail-card">
+        <h2>Metadata</h2>
+        <div class="detail-row">
+            <span class="detail-label">Created:</span>
+            <span class="detail-value">{{ location.created_at|date:"M d, Y H:i" }}</span>
+        </div>
+        <div class="detail-row">
+            <span class="detail-label">Last Updated:</span>
+            <span class="detail-value">{{ location.updated_at|date:"M d, Y H:i" }}</span>
+        </div>
+        {% if location.created_by %}
+        <div class="detail-row">
+            <span class="detail-label">Created By:</span>
+            <span class="detail-value">{{ location.created_by.email }}</span>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% if children %}
+<div class="section">
+    <h2>Child Locations</h2>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Capacity</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for child in children %}
+                <tr>
+                    <td><strong>{{ child.code }}</strong></td>
+                    <td>{{ child.name }}</td>
+                    <td>{{ child.get_location_type_display }}</td>
+                    <td>
+                        {% if child.capacity %}
+                        {{ child.capacity|floatformat:0 }} {{ child.capacity_unit }}
+                        {% else %}
+                        —
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge badge-{% if child.is_active %}success{% else %}secondary{% endif %}">
+                            {% if child.is_active %}Active{% else %}Inactive{% endif %}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'location_detail' child.pk %}" class="btn-link">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+{% if items %}
+<div class="section">
+    <h2>Items in This Location</h2>
+    <div class="table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    <th>Code</th>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Quantity</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in items %}
+                <tr>
+                    <td><strong>{{ item.code }}</strong></td>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.item_type.name }}</td>
+                    <td>{{ item.quantity|floatformat:0 }} {{ item.unit }}</td>
+                    <td>
+                        <span class="badge badge-{% if item.status == 'active' %}success{% else %}secondary{% endif %}">
+                            {{ item.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'item_detail' item.pk %}" class="btn-link">View</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+{% endblock %}

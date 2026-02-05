@@ -19,7 +19,7 @@
             </svg>
         </div>
         <div class="stat-content">
-            <h3 class="stat-value">0</h3>
+            <h3 class="stat-value">{{ total_users }}</h3>
             <p class="stat-label">Total Users</p>
         </div>
     </div>
@@ -31,7 +31,7 @@
             </svg>
         </div>
         <div class="stat-content">
-            <h3 class="stat-value">0</h3>
+            <h3 class="stat-value">{{ total_items }}</h3>
             <p class="stat-label">Total Items</p>
         </div>
     </div>
@@ -45,7 +45,7 @@
             </svg>
         </div>
         <div class="stat-content">
-            <h3 class="stat-value">0</h3>
+            <h3 class="stat-value">{{ total_transactions }}</h3>
             <p class="stat-label">Transactions</p>
         </div>
     </div>
@@ -58,7 +58,7 @@
             </svg>
         </div>
         <div class="stat-content">
-            <h3 class="stat-value">0</h3>
+            <h3 class="stat-value">{{ total_locations }}</h3>
             <p class="stat-label">Locations</p>
         </div>
     </div>
@@ -71,26 +71,26 @@
         </div>
         <div class="card-body">
             <div class="action-list">
-                <a href="/admin/items/item/add/" class="action-item">
+                <a href="{% url 'item_create' %}" class="action-item">
                     <span>➕ Add New Item</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
                 </a>
-                <a href="/admin/transactions/transaction/add/" class="action-item">
-                    <span>📝 Create Transaction</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M5 12h14M12 5l7 7-7 7"/>
-                    </svg>
-                </a>
-                <a href="/admin/locations/location/add/" class="action-item">
+                <a href="{% url 'location_create' %}" class="action-item">
                     <span>📍 Add Location</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>
                 </a>
-                <a href="/admin/users/user/add/" class="action-item">
-                    <span>👤 Add User</span>
+                <a href="{% url 'item_list' %}" class="action-item">
+                    <span>📦 View All Items</span>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M5 12h14M12 5l7 7-7 7"/>
+                    </svg>
+                </a>
+                <a href="{% url 'location_list' %}" class="action-item">
+                    <span>🗺️ View All Locations</span>
                     <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M5 12h14M12 5l7 7-7 7"/>
                     </svg>

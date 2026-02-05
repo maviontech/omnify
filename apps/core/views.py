@@ -24,4 +24,15 @@ class DashboardView(TemplateView):
         context = super().get_context_data(**kwargs)
         if hasattr(self.request, 'tenant'):
             context['tenant'] = self.request.tenant
+        
+        # Get statistics
+        from apps.items.models import Item
+        from apps.locations.models import Location
+        from apps.users.models import User
+        
+        context['total_items'] = Item.objects.count()
+        context['total_locations'] = Location.objects.count()
+        context['total_users'] = User.objects.count()
+        context['total_transactions'] = 0  # Will be implemented later
+        
         return context

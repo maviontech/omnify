@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}{% if location %}Edit{% else %}Create{% endif %} Location - Omnify{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h1>{% if location %}Edit Location{% else %}Create New Location{% endif %}</h1>
+    <a href="{% if location %}{% url 'location_detail' location.pk %}{% else %}{% url 'location_list' %}{% endif %}" class="btn btn-secondary">Cancel</a>
+</div>
+
+<div class="form-container">
+    <form method="post" class="form">
+        {% csrf_token %}
+        
+        <div class="form-section">
+            <h2>Basic Information</h2>
+            
+            <div class="form-group">
+                <label for="name">Name *</label>
+                <input type="text" name="name" id="name" value="{{ location.name|default:'' }}" required class="form-control">
+            </div>
+            
+            <div class="form-group">
+                <label for="code">Code</label>
+                <input type="text" name="code" id="code" value="{{ location.code|default:'' }}" class="form-control">
+                <small>Leave blank to auto-generate from name</small>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="location_type">Type</label>
+                    <select name="location_type" id="location_type" class="form-control">
+                        <option value="warehouse" {% if location and location.location_type == 'warehouse' %}selected{% endif %}>Warehouse</option>
+                        <option value="building" {% if location and location.location_type == 'building' %}selected{% endif %}>Building</option>
+                        <option value="floor" {% if location and location.location_type == 'floor' %}selected{% endif %}>Floor</option>
+                        <option value="room" {% if location and location.location_type == 'room' %}selected{% endif %}>Room</option>
+                        <option value="aisle" {% if location and location.location_type == 'aisle' %}selected{% endif %}>Aisle</option>
+                        <option value="shelf" {% if location and location.location_type == 'shelf' %}selected{% endif %}>Shelf</option>
+                        <option value="bin" {% if location and location.location_type == 'bin' %}selected{% endif %}>Bin</option>
+                        <option value="zone" {% if location and location.location_type == 'zone' %}selected{% endif %}>Zone</option>
+                        <option value="other" {% if not location or location.location_type == 'other' %}selected{% endif %}>Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="parent">Parent Location</label>
+                    <select name="parent" id="parent" class="form-control">
+                        <option value="">None (Root Location)</option>
+                        {% for loc in locations %}
+                        <option value="{{ loc.id }}" {% if location and location.parent and location.parent.id == loc.id %}selected{% endif %}>
+                            {{ loc.get_full_path }}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" name="is_active" {% if not location or location.is_active %}checked{% endif %}>
+                    Active
+                </label>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h2>Address</h2>
+            
+            <div class="form-group">
+                <label for="address">Street Address</label>
+                <textarea name="address" id="address" rows="2" class="form-control">{{ location.address|default:'' }}</textarea>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" name="city" id="city" value="{{ location.city|default:'' }}" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="state">State/Province</label>
+                    <input type="text" name="state" id="state" value="{{ location.state|default:'' }}" class="form-control">
+                </div>
+            </div>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="postal_code">Postal Code</label>
+                    <input type="text" name="postal_code" id="postal_code" value="{{ location.postal_code|default:'' }}" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="country">Country</label>
+                    <input type="text" name="country" id="country" value="{{ location.country|default:'' }}" class="form-control">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-section">
+            <h2>Capacity</h2>
+            
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="capacity">Capacity</label>
+                    <input type="number" name="capacity" id="capacity" value="{{ location.capacity|default:'' }}" step="0.001" class="form-control">
+                </div>
+                
+                <div class="form-group">
+                    <label for="capacity_unit">Unit</label>
+                    <input type="text" name="capacity_unit" id="capacity_unit" value="{{ location.capacity_unit|default:'items' }}" class="form-control">
+                </div>
+            </div>
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">{% if location %}Update{% else %}Create{% endif %} Location</button>
+            <a href="{% if location %}{% url 'location_detail' location.pk %}{% else %}{% url 'location_list' %}{% endif %}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}
