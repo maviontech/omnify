@@ -1,0 +1,3 @@
+"""
+Omnify Django applications package.
+"""
