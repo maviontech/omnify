@@ -65,7 +65,7 @@ class TenantConfiguration(models.Model):
     primary_color = models.CharField(max_length=7, default='#0066FF')  # Omnify Blue
     secondary_color = models.CharField(max_length=7, default='#1A1A2E')  # Omnify Dark
     
-    # Features enabled
+    # Features enabled (individual flags for core features)
     enable_workflows = models.BooleanField(default=True)
     enable_notifications = models.BooleanField(default=True)
     enable_reports = models.BooleanField(default=True)
@@ -73,15 +73,31 @@ class TenantConfiguration(models.Model):
     enable_barcode = models.BooleanField(default=False)
     enable_batch_tracking = models.BooleanField(default=False)
     enable_serial_tracking = models.BooleanField(default=False)
-    
+
+    # Extensible module system (for template-driven configuration)
+    enabled_modules = models.JSONField(
+        default=list,
+        blank=True,
+        help_text="List of enabled module identifiers, e.g. ['items', 'transactions', 'workflows']"
+    )
+
     # Limits (configurable per subscription tier)
     max_users = models.IntegerField(default=10)
     max_items = models.IntegerField(default=1000)
     max_locations = models.IntegerField(default=50)
     max_storage_mb = models.IntegerField(default=1000)  # 1GB
-    
+    max_item_type_depth = models.IntegerField(default=10)
+    max_location_depth = models.IntegerField(default=15)
+    max_bulk_operation_size = models.IntegerField(default=1000)
+    max_import_rows = models.IntegerField(default=100000)
+    max_file_upload_mb = models.IntegerField(default=10)
+
     class Meta:
         db_table = 'tenants_configuration'
-    
+
     def __str__(self):
         return f"Configuration for {self.tenant.name}"
+
+    def is_module_enabled(self, module_name):
+        """Check if a specific module is enabled for this tenant."""
+        return module_name in self.enabled_modules

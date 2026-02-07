@@ -2,14 +2,17 @@
 Views for items app.
 """
 from django.shortcuts import render, get_object_or_404, redirect
-from django.views.generic import ListView, DetailView, CreateView, UpdateView
+from django.views.generic import ListView, DetailView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db.models import Q, Sum
+from apps.core.models import get_current_tenant
 from .models import Item, ItemType, CustomField, ItemCustomFieldValue
 from apps.locations.models import Location
 
 
-class ItemListView(ListView):
+class ItemListView(LoginRequiredMixin, ListView):
     """List all items."""
     model = Item
     template_name = 'items/item_list.html'
@@ -63,7 +66,7 @@ class ItemListView(ListView):
         return context
 
 
-class ItemDetailView(DetailView):
+class ItemDetailView(LoginRequiredMixin, DetailView):
     """Display item details."""
     model = Item
     template_name = 'items/item_detail.html'
@@ -78,9 +81,15 @@ class ItemDetailView(DetailView):
         return context
 
 
+@login_required
 def item_create(request):
     """Create a new item."""
     if request.method == 'POST':
+        tenant = get_current_tenant()
+        if not tenant:
+            messages.error(request, 'No tenant context found.')
+            return redirect('item_list')
+
         # Get form data
         item_type_id = request.POST.get('item_type')
         code = request.POST.get('code')
@@ -94,9 +103,10 @@ def item_create(request):
         location_id = request.POST.get('location')
         reorder_point = request.POST.get('reorder_point') or None
         reorder_quantity = request.POST.get('reorder_quantity') or None
-        
-        # Create item
+
+        # Create item with tenant and created_by
         item = Item.objects.create(
+            tenant=tenant,
             item_type_id=item_type_id,
             code=code,
             name=name,
@@ -108,12 +118,13 @@ def item_create(request):
             status=status,
             location_id=location_id,
             reorder_point=reorder_point,
-            reorder_quantity=reorder_quantity
+            reorder_quantity=reorder_quantity,
+            created_by=request.user if request.user.is_authenticated else None,
         )
-        
+
         messages.success(request, f'Item "{item.name}" created successfully!')
         return redirect('item_detail', pk=item.pk)
-    
+
     # GET request
     context = {
         'item_types': ItemType.objects.filter(is_active=True).order_by('name'),
@@ -122,10 +133,11 @@ def item_create(request):
     return render(request, 'items/item_form.html', context)
 
 
+@login_required
 def item_edit(request, pk):
     """Edit an existing item."""
     item = get_object_or_404(Item, pk=pk)
-    
+
     if request.method == 'POST':
         # Update item
         item.item_type_id = request.POST.get('item_type')

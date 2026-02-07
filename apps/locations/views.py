@@ -3,12 +3,15 @@ Views for locations app.
 """
 from django.shortcuts import render, get_object_or_404, redirect
 from django.views.generic import ListView, DetailView
+from django.contrib.auth.decorators import login_required
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib import messages
 from django.db.models import Q, Count
+from apps.core.models import get_current_tenant
 from .models import Location
 
 
-class LocationListView(ListView):
+class LocationListView(LoginRequiredMixin, ListView):
     """List all locations."""
     model = Location
     template_name = 'locations/location_list.html'
@@ -54,7 +57,7 @@ class LocationListView(ListView):
         return context
 
 
-class LocationDetailView(DetailView):
+class LocationDetailView(LoginRequiredMixin, DetailView):
     """Display location details."""
     model = Location
     template_name = 'locations/location_detail.html'
@@ -73,9 +76,15 @@ class LocationDetailView(DetailView):
         return context
 
 
+@login_required
 def location_create(request):
     """Create a new location."""
     if request.method == 'POST':
+        tenant = get_current_tenant()
+        if not tenant:
+            messages.error(request, 'No tenant context found.')
+            return redirect('location_list')
+
         # Get form data
         name = request.POST.get('name')
         code = request.POST.get('code', '')
@@ -89,9 +98,10 @@ def location_create(request):
         capacity = request.POST.get('capacity') or None
         capacity_unit = request.POST.get('capacity_unit', 'items')
         is_active = request.POST.get('is_active') == 'on'
-        
-        # Create location
+
+        # Create location with tenant and created_by
         location = Location.objects.create(
+            tenant=tenant,
             name=name,
             code=code,
             location_type=location_type,
@@ -103,7 +113,8 @@ def location_create(request):
             country=country,
             capacity=capacity,
             capacity_unit=capacity_unit,
-            is_active=is_active
+            is_active=is_active,
+            created_by=request.user if request.user.is_authenticated else None,
         )
         
         messages.success(request, f'Location "{location.name}" created successfully!')
@@ -117,6 +128,7 @@ def location_create(request):
     return render(request, 'locations/location_form.html', context)
 
 
+@login_required
 def location_edit(request, pk):
     """Edit an existing location."""
     location = get_object_or_404(Location, pk=pk)

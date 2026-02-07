@@ -1,429 +1,466 @@
-# Platform Extensibility and Flexibility
+# Developer Implementation Notes: Extensibility Patterns
 
 ## Overview
 
-This document explains how the Inventory & Logistics Management Platform is designed to be **fully extensible** with **no hardcoded limits**, allowing it to grow and adapt to any business requirement.
+This document provides practical implementation guidance for developers working on Omnify. It covers how to add new modules, configurable limits, custom field types, and other extensible features. Read alongside [EXTENSIBILITY_GUIDELINES.md](EXTENSIBILITY_GUIDELINES.md) which covers the design philosophy.
 
 ---
 
-## Key Principle: Configuration Over Hardcoding
+## How to Add a New Module
 
-**Everything is configurable.** No limits are baked into the code. All constraints are stored in the database and can be adjusted based on:
-- Tenant subscription tier
-- Business requirements
-- System capacity
-- Regulatory needs
+Modules are the building blocks of Omnify. Each feature area (invoicing, workflows, notifications, etc.) is a "module" that tenants can enable or disable.
 
----
+### Step 1: Define the Module Identifier
 
-## What We've Made Extensible
+Add the module identifier to the module registry. Module names are lowercase, snake_case strings.
 
-### 1. **Hierarchy Depths**
-**Before:** "Support at least 5 levels of hierarchy"  
-**Now:** Configurable depth limits with no hardcoded maximum
-
-**Examples:**
-- Simple warehouse: 3 levels (Warehouse → Aisle → Shelf)
-- Complex distribution center: 8 levels (Region → Warehouse → Zone → Aisle → Bay → Shelf → Bin → Position)
-- Item categories: As deep as needed for your taxonomy
-
-**Configuration:** Set per tenant in system settings
-
----
-
-### 2. **Bulk Operation Limits**
-**Before:** "Support up to 1,000 entities per request"  
-**Now:** Configurable per tenant subscription tier
-
-**Examples:**
-- Starter tier: 100 items per bulk operation
-- Professional tier: 1,000 items per bulk operation
-- Enterprise tier: 10,000 items per bulk operation
-- Custom tier: Unlimited (with performance considerations)
-
-**Configuration:** Set per subscription tier
-
----
-
-### 3. **File Size Limits**
-**Before:** "10 MB per attachment"  
-**Now:** Configurable per tenant subscription tier
-
-**Examples:**
-- Basic tier: 5 MB per file
-- Professional tier: 25 MB per file
-- Enterprise tier: 100 MB per file
-- Can be adjusted for specific tenants with special needs
-
-**Configuration:** Set per subscription tier or per tenant
-
----
-
-### 4. **Import/Export Limits**
-**Before:** "Up to 100,000 items"  
-**Now:** Configurable per tenant subscription tier
-
-**Examples:**
-- Small business: 10,000 items per import
-- Medium business: 100,000 items per import
-- Large enterprise: 1,000,000 items per import
-- Batch processing for larger datasets
-
-**Configuration:** Set per subscription tier
-
----
-
-### 5. **Concurrent User Limits**
-**Before:** Fixed limits  
-**Now:** Configurable per tenant subscription tier
-
-**Examples:**
-- Starter: 10 concurrent users
-- Professional: 100 concurrent users
-- Enterprise: 1,000 concurrent users
-- Custom: Negotiated based on needs
-
-**Configuration:** Set per subscription tier
-
----
-
-### 6. **API Rate Limits**
-**Before:** Fixed rate limits  
-**Now:** Configurable per tenant or API key
-
-**Examples:**
-- Standard API key: 1,000 requests/hour
-- Premium API key: 10,000 requests/hour
-- Integration partner: 100,000 requests/hour
-- Can be adjusted for specific integrations
-
-**Configuration:** Set per API key or tenant
-
----
-
-## New Extensible Features Added
-
-### 7. **Financial Management Module**
-
-The platform now includes comprehensive financial tracking:
-
-#### **Invoice Management**
-- Generate invoices from transactions
-- Automatic calculation of totals, taxes, discounts
-- Custom invoice numbering schemes
-- Multiple invoice statuses (draft, sent, paid, overdue, cancelled)
-- Printable PDF invoices with branding
-
-#### **Payment Tracking**
-- Record payments against invoices
-- Support partial and multiple payments
-- Automatic status updates
-- Payment method tracking
-- Outstanding balance calculation
-- Aging reports for overdue invoices
-
-#### **Sales Orders**
-- Create sales orders before shipping
-- Reserve inventory for confirmed orders
-- Track fulfillment progress
-- Auto-generate invoices from fulfilled orders
-- Order-to-cash process management
-
-#### **Purchase Orders**
-- Create purchase orders for suppliers
-- Track expected deliveries
-- Record goods receipt
-- Auto-create inward transactions
-- Procurement process management
-
-#### **Financial Reporting**
-- Sales reports by period, customer, item type
-- Purchase reports by period, supplier, item type
-- Gross profit calculations
-- Accounts receivable aging
-- Accounts payable tracking
-- Inventory valuation
-
-#### **Pricing Management**
-- Base prices for items
-- Customer-specific pricing
-- Quantity-based pricing tiers
-- Time-based promotional pricing
-- Discounts (percentage or fixed amount)
-- Price history tracking
-- Multi-currency support
-
----
-
-### 8. **Modular Feature System**
-
-**Concept:** Tenants only pay for and see features they need
-
-**How It Works:**
-- Each major feature is a "module" (invoicing, payments, purchase orders, etc.)
-- Modules can be enabled/disabled per tenant
-- Disabled modules:
-  - Hide UI elements
-  - Block API access
-  - Preserve data (can be re-enabled later)
-- Subscription tiers determine available modules
-
-**Example Configurations:**
-
-**Basic Warehouse (Inventory Only):**
-- ✅ Items & Item Types
-- ✅ Locations
-- ✅ Transactions
-- ✅ Basic Reports
-- ❌ Invoicing
-- ❌ Payments
-- ❌ Purchase Orders
-- ❌ Sales Orders
-
-**Food Manufacturing Factory (Full Suite):**
-- ✅ Items & Item Types
-- ✅ Locations
-- ✅ Transactions
-- ✅ Workflows
-- ✅ Invoicing
-- ✅ Payments
-- ✅ Purchase Orders
-- ✅ Sales Orders
-- ✅ Batch Tracking
-- ✅ Financial Reports
-- ✅ Customer Management
-- ✅ Supplier Management
-
-**Library (Specialized):**
-- ✅ Items & Item Types
-- ✅ Locations
-- ✅ Transactions (Borrow/Return)
-- ✅ Workflows
-- ✅ Customer Management (Members)
-- ❌ Invoicing
-- ❌ Purchase Orders
-- ❌ Financial Reports
-
----
-
-## Real-World Example: Food Manufacturing Factory
-
-Let's see how a food manufacturing factory would use the extensible platform:
-
-### **Inventory Tracking**
-- **Item Types:** Raw Materials, Packaging, Work-in-Progress, Finished Products
-- **Custom Fields:** 
-  - Batch Number
-  - Manufacturing Date
-  - Expiry Date
-  - Allergen Information
-  - Storage Temperature
-  - Supplier
-  - Quality Grade
-
-### **Location Management**
-- **Hierarchy (8 levels):**
-  - Factory → Building → Floor → Cold Storage Room → Rack → Shelf → Bin → Pallet Position
-
-### **Workflow Management**
-- **Raw Material Flow:**
-  1. Ordered → Received → Quality Check → Approved → In Storage → Issued to Production
-  
-- **Production Flow:**
-  1. Production Started → In Process → Quality Control → Passed → Packaging → Finished Goods
-
-### **Transaction Types**
-- Goods Receipt Note (GRN)
-- Quality Inspection
-- Issue to Production
-- Production Output
-- Packaging
-- Dispatch to Customer
-- Return from Customer
-
-### **Financial Operations**
-
-#### **Purchase Orders**
-- Create PO for raw materials from suppliers
-- Track expected delivery dates
-- Record goods receipt against PO
-- Match invoices to POs
-
-#### **Sales Orders**
-- Receive customer orders
-- Reserve finished products
-- Plan production if needed
-- Track order fulfillment
-
-#### **Invoicing**
-- Generate invoices for shipped products
-- Include:
-  - Product details with batch numbers
-  - Quantities and prices
-  - Taxes (VAT, excise tax for food)
-  - Delivery charges
-  - Payment terms
-
-#### **Payment Tracking**
-- Record customer payments
-- Track outstanding invoices
-- Send payment reminders
-- Generate aging reports
-
-#### **Financial Reports**
-- Daily production output value
-- Sales by product category
-- Cost of goods sold
-- Inventory valuation
-- Profit margins by product
-- Customer payment status
-
-### **Batch Tracking**
-- Track every batch from raw materials to finished products
-- Trace ingredients in case of recalls
-- Monitor expiry dates
-- FIFO inventory rotation
-- Quality control by batch
-
-### **Supplier Management**
-- Track multiple suppliers per raw material
-- Supplier performance metrics
-- Purchase history
-- Outstanding purchase orders
-- Payment terms
-
-### **Customer Management**
-- Customer-specific pricing
-- Credit limits
-- Payment terms
-- Order history
-- Outstanding invoices
-
----
-
-## Configuration Storage
-
-All limits and settings are stored in the database:
-
-```
-TenantConfiguration Table:
-- max_hierarchy_depth
-- max_bulk_operation_size
-- max_file_upload_size
-- max_import_size
-- max_export_size
-- max_concurrent_users
-- enabled_modules (JSON array)
-- custom_limits (JSON object)
-
-SubscriptionTier Table:
-- tier_name
-- default_limits (JSON object)
-- available_modules (JSON array)
-- pricing
-
-APIKey Table:
-- key
-- tenant_id
-- rate_limit_per_hour
-- rate_limit_per_minute
-```
-
----
-
-## Benefits of This Approach
-
-### 1. **Future-Proof**
-- No code changes needed to adjust limits
-- Can accommodate any business size
-- Scales from small business to enterprise
-
-### 2. **Flexible Pricing**
-- Different tiers with different capabilities
-- Pay for what you use
-- Easy to upgrade/downgrade
-
-### 3. **Customizable Per Client**
-- Special limits for specific tenants
-- Industry-specific configurations
-- Regulatory compliance adjustments
-
-### 4. **Performance Optimization**
-- Limits prevent system abuse
-- Can be tuned based on infrastructure
-- Gradual scaling as needed
-
-### 5. **Competitive Advantage**
-- "Unlimited" tiers for enterprise clients
-- Can match any competitor's offering
-- Flexible enough for any use case
-
----
-
-## Implementation Notes
-
-### Database Configuration
 ```python
+# apps/core/modules.py
+AVAILABLE_MODULES = {
+    'items': {
+        'name': 'Items & Inventory',
+        'description': 'Track items, quantities, and locations',
+        'default_enabled': True,
+        'tier_availability': ['starter', 'professional', 'enterprise'],
+        'dependencies': [],  # No dependencies
+    },
+    'workflows': {
+        'name': 'Workflows & State Management',
+        'description': 'Define item lifecycle states and transitions',
+        'default_enabled': True,
+        'tier_availability': ['professional', 'enterprise'],
+        'dependencies': ['items'],  # Requires items module
+    },
+    'invoicing': {
+        'name': 'Invoicing',
+        'description': 'Generate and manage invoices',
+        'default_enabled': False,
+        'tier_availability': ['professional', 'enterprise'],
+        'dependencies': ['items', 'transactions'],
+    },
+    # ... add new modules here
+}
+```
+
+### Step 2: Create the Django App
+
+```bash
+python manage.py startapp new_module
+# Move to apps/new_module/
+```
+
+### Step 3: Add Module Check to Views
+
+```python
+# apps/new_module/views.py
+from apps.core.decorators import require_module
+
+@require_module('new_module')
+def new_module_list(request):
+    # View logic - only accessible if module is enabled for tenant
+    pass
+```
+
+### Step 4: Add Module Check to API
+
+```python
+# apps/new_module/api/views.py
+from apps.core.permissions import ModuleEnabled
+
+class NewModuleViewSet(viewsets.ModelViewSet):
+    permission_classes = [ModuleEnabled('new_module')]
+```
+
+### Step 5: Hide UI When Module is Disabled
+
+```html
+<!-- In Django templates -->
+{% if tenant_config.is_module_enabled 'new_module' %}
+  <a href="{% url 'new_module:list' %}">New Module</a>
+{% endif %}
+```
+
+### Step 6: Register in TenantConfiguration
+
+The `enabled_modules` JSONField on `TenantConfiguration` stores enabled module names as a list. When applying a template, the template's module list populates this field.
+
+---
+
+## How to Add a New Configurable Limit
+
+### Step 1: Add Field to TenantConfiguration
+
+```python
+# apps/tenants/models.py
 class TenantConfiguration(models.Model):
-    tenant = models.OneToOneField(Tenant)
-    
-    # Hierarchy limits
-    max_item_type_depth = models.IntegerField(default=10)
-    max_location_depth = models.IntegerField(default=15)
-    max_role_depth = models.IntegerField(default=5)
-    
-    # Operation limits
-    max_bulk_operation_size = models.IntegerField(default=1000)
-    max_import_rows = models.IntegerField(default=100000)
-    max_export_rows = models.IntegerField(default=100000)
-    
-    # File limits (in MB)
-    max_file_upload_size = models.IntegerField(default=10)
-    
-    # User limits
-    max_concurrent_users = models.IntegerField(default=100)
-    
-    # API limits
-    api_rate_limit_per_hour = models.IntegerField(default=1000)
-    
-    # Enabled modules
-    enabled_modules = models.JSONField(default=list)
-    # Example: ['invoicing', 'payments', 'purchase_orders', 'sales_orders']
+    # ... existing fields ...
+    max_new_limit = models.IntegerField(
+        default=100,
+        help_text="Maximum allowed for new_feature per tenant"
+    )
 ```
 
-### Runtime Validation
-```python
-def validate_hierarchy_depth(tenant, current_depth):
-    max_depth = tenant.configuration.max_item_type_depth
-    if current_depth >= max_depth:
-        raise ValidationError(
-            f"Maximum hierarchy depth of {max_depth} exceeded. "
-            f"Contact support to increase limit."
-        )
+### Step 2: Add Default to Subscription Tiers
 
-def validate_bulk_operation(tenant, item_count):
-    max_size = tenant.configuration.max_bulk_operation_size
-    if item_count > max_size:
+```python
+# apps/tenants/tier_defaults.py
+TIER_DEFAULTS = {
+    'starter': {
+        'max_new_limit': 100,
+        # ...
+    },
+    'professional': {
+        'max_new_limit': 1000,
+        # ...
+    },
+    'enterprise': {
+        'max_new_limit': 10000,
+        # ...
+    },
+}
+```
+
+### Step 3: Create Validation Helper
+
+```python
+# apps/core/validators.py
+from django.core.exceptions import ValidationError
+
+def validate_limit(tenant, field_name, current_count):
+    """Generic limit validator. Raises ValidationError if limit exceeded."""
+    config = tenant.configuration
+    max_allowed = getattr(config, field_name)
+    if current_count >= max_allowed:
         raise ValidationError(
-            f"Bulk operation limited to {max_size} items. "
-            f"Current request: {item_count} items."
+            f"Limit of {max_allowed} reached for {field_name}. "
+            f"Upgrade your plan or contact support."
         )
+```
+
+### Step 4: Use in Service/View
+
+```python
+def create_something(tenant, data):
+    current_count = Something.objects.filter(tenant=tenant).count()
+    validate_limit(tenant, 'max_new_limit', current_count)
+    # proceed with creation
 ```
 
 ---
 
-## Summary
+## How to Add a New Custom Field Type
 
-The platform is designed with **zero hardcoded limits**. Everything is:
-- ✅ Configurable per tenant
-- ✅ Adjustable per subscription tier
-- ✅ Modifiable at runtime
-- ✅ Stored in database
-- ✅ Extensible for future needs
+Custom fields are stored in the `CustomField` model with a `field_type` choice. To add a new type:
 
-This means:
-- **For a small library:** Simple configuration, low limits, basic features
-- **For a food factory:** Complex configuration, high limits, full financial suite
-- **For an enterprise:** Unlimited configuration, maximum limits, all modules
+### Step 1: Add to Field Type Choices
 
-**The same platform. Infinite possibilities. No code changes needed.**
+```python
+# apps/items/models.py
+class CustomField(TenantAwareModel):
+    FIELD_TYPES = [
+        ('text', 'Text'),
+        ('number', 'Number'),
+        ('date', 'Date'),
+        ('datetime', 'Date & Time'),
+        ('boolean', 'Yes/No'),
+        ('dropdown', 'Dropdown'),
+        ('multiselect', 'Multi-Select'),
+        ('file', 'File Attachment'),
+        ('url', 'URL'),
+        ('currency', 'Currency'),       # NEW
+        ('email', 'Email Address'),     # NEW
+        ('phone', 'Phone Number'),      # NEW
+        ('color', 'Color Picker'),      # NEW
+    ]
+```
+
+### Step 2: Add Storage Column (if needed)
+
+If the new type doesn't fit existing value columns (`value_text`, `value_number`, `value_date`, `value_datetime`, `value_boolean`, `value_json`), add a new column to `ItemCustomFieldValue`. Most types can reuse `value_text` or `value_json`.
+
+### Step 3: Add Validation Logic
+
+```python
+# apps/items/services/custom_field_validator.py
+class CustomFieldValidator:
+    def validate_currency(self, value, field):
+        """Validate currency values: must be numeric with max 2 decimal places."""
+        try:
+            decimal_value = Decimal(str(value))
+            if decimal_value.as_tuple().exponent < -2:
+                raise ValidationError("Currency values allow max 2 decimal places")
+            if decimal_value < 0:
+                raise ValidationError("Currency values must be non-negative")
+        except InvalidOperation:
+            raise ValidationError(f"Invalid currency value: {value}")
+```
+
+### Step 4: Add Frontend Rendering
+
+```javascript
+// static/js/custom_fields.js
+function renderCustomField(field) {
+    switch (field.type) {
+        case 'currency':
+            return `<input type="number" step="0.01" min="0"
+                     name="cf_${field.id}" placeholder="0.00">`;
+        // ... other types
+    }
+}
+```
+
+---
+
+## How to Add a New Transaction Type Effect
+
+Transaction types can affect inventory in different ways. The `affects_quantity` field uses choices: `increase`, `decrease`, `none`. To add a new effect:
+
+### Step 1: Add to TransactionType Choices
+
+```python
+# apps/transactions/models.py
+class TransactionType(TenantAwareModel):
+    QUANTITY_EFFECTS = [
+        ('increase', 'Increase Quantity'),
+        ('decrease', 'Decrease Quantity'),
+        ('none', 'No Quantity Change'),
+        ('transfer', 'Transfer Between Locations'),  # NEW
+        ('adjust', 'Adjustment (Can Increase or Decrease)'),  # NEW
+    ]
+```
+
+### Step 2: Update TransactionProcessor
+
+```python
+# apps/transactions/services/processor.py
+class TransactionProcessor:
+    def process_quantity_change(self, transaction_item, effect_type):
+        if effect_type == 'transfer':
+            # Decrease at source, increase at destination
+            self._decrease_at_location(transaction_item, transaction_item.from_location)
+            self._increase_at_location(transaction_item, transaction_item.to_location)
+        elif effect_type == 'adjust':
+            # Positive quantity = increase, negative = decrease
+            if transaction_item.quantity >= 0:
+                self._increase_quantity(transaction_item)
+            else:
+                self._decrease_quantity(transaction_item)
+```
+
+---
+
+## How to Add a New Workflow Condition
+
+Workflow transitions can have conditions that must be met before the transition is allowed.
+
+### Step 1: Define Condition Type
+
+```python
+# apps/workflows/conditions.py
+CONDITION_TYPES = {
+    'field_equals': {
+        'description': 'A custom field must equal a specific value',
+        'params': ['field_name', 'expected_value'],
+    },
+    'quantity_above': {
+        'description': 'Item quantity must be above threshold',
+        'params': ['threshold'],
+    },
+    'approval_required': {
+        'description': 'Requires approval from user with specific role',
+        'params': ['role_name'],
+    },
+    'time_elapsed': {
+        'description': 'Minimum time must pass since entering current state',
+        'params': ['hours'],
+    },
+}
+```
+
+### Step 2: Implement Condition Checker
+
+```python
+# apps/workflows/services/condition_checker.py
+class ConditionChecker:
+    def check(self, condition_type, params, item, user):
+        method = getattr(self, f'check_{condition_type}', None)
+        if not method:
+            raise ValueError(f"Unknown condition type: {condition_type}")
+        return method(params, item, user)
+
+    def check_field_equals(self, params, item, user):
+        field_value = item.get_custom_field_value(params['field_name'])
+        return field_value == params['expected_value']
+
+    def check_quantity_above(self, params, item, user):
+        return item.quantity > Decimal(str(params['threshold']))
+```
+
+---
+
+## Multi-Tenancy Patterns to Follow
+
+### Always Use TenantAwareModel
+
+Every model that stores tenant-specific data must extend `TenantAwareModel`:
+
+```python
+class MyModel(TenantAwareModel):
+    # Your fields here
+    # tenant FK and TenantManager are automatically included
+    pass
+```
+
+### Never Query Without Tenant Context
+
+```python
+# WRONG - bypasses tenant isolation
+items = Item.objects.all()
+
+# RIGHT - TenantManager automatically filters by current tenant
+items = Item.objects.all()  # Only works if TenantMiddleware set the tenant
+
+# RIGHT - explicit tenant filter (for background tasks without request context)
+items = Item.objects.filter(tenant=tenant)
+```
+
+### Background Tasks (Celery)
+
+Celery tasks run outside the request cycle, so there's no TenantMiddleware. Always pass the tenant_id:
+
+```python
+@shared_task
+def process_report(tenant_id, report_id):
+    tenant = Tenant.objects.get(id=tenant_id)
+    set_current_tenant(tenant)  # Set thread-local for the task
+    try:
+        # Now TenantManager filtering works
+        report = ReportDefinition.objects.get(id=report_id)
+        # ... process
+    finally:
+        clear_current_tenant()
+```
+
+---
+
+## Template JSON Schema Reference
+
+Templates use a standardized JSON structure. See [TEMPLATE_SYSTEM_GUIDE.md](TEMPLATE_SYSTEM_GUIDE.md) for the full schema. Key sections:
+
+```json
+{
+  "template_id": "uuid",
+  "name": "Template Name",
+  "version": "1.0.0",
+  "industry": "hospital",
+  "item_types": [...],
+  "workflows": [...],
+  "transaction_types": [...],
+  "location_hierarchy": {...},
+  "roles": [...],
+  "modules": { "enabled": [...], "disabled": [...] },
+  "configuration": {...},
+  "sample_data": [...]
+}
+```
+
+---
+
+## Testing Conventions
+
+### Property-Based Tests (Hypothesis)
+
+Use for universal properties that must hold for all inputs:
+
+```python
+from hypothesis import given, strategies as st
+
+@given(st.text(min_size=1, max_size=50))
+def test_item_code_uniqueness(code):
+    """Property: No two items in the same tenant can have the same code."""
+    # Create item with code in tenant A - should succeed
+    # Create item with same code in tenant A - should fail
+    # Create item with same code in tenant B - should succeed
+```
+
+### Unit Tests (pytest)
+
+Use for specific scenarios and edge cases:
+
+```python
+def test_transaction_prevents_negative_inventory():
+    """An item with quantity 5 cannot have 10 units withdrawn."""
+    item = create_item(quantity=5)
+    with pytest.raises(InsufficientQuantityError):
+        process_transaction(item, quantity=-10)
+```
+
+### Test File Organization
+
+```
+apps/
+  items/
+    tests/
+      __init__.py
+      test_models.py          # Model unit tests
+      test_services.py        # Service layer tests
+      test_views.py            # View tests
+      test_api.py              # API endpoint tests
+      test_properties.py       # Property-based tests
+      conftest.py              # Fixtures for this app
+```
+
+---
+
+## Performance Patterns
+
+### Use select_related for FK Traversals
+
+```python
+# WRONG - N+1 query problem
+items = Item.objects.all()
+for item in items:
+    print(item.item_type.name)  # Separate query per item
+
+# RIGHT
+items = Item.objects.select_related('item_type', 'location', 'created_by')
+```
+
+### Use prefetch_related for Reverse Relations
+
+```python
+# WRONG - N+1
+item_types = ItemType.objects.all()
+for it in item_types:
+    print(it.custom_fields.count())  # Separate query per type
+
+# RIGHT
+item_types = ItemType.objects.prefetch_related('custom_fields')
+```
+
+### Cache Tenant Configuration
+
+```python
+from django.core.cache import cache
+
+def get_tenant_config(tenant):
+    cache_key = f'tenant_config:{tenant.id}'
+    config = cache.get(cache_key)
+    if not config:
+        config = TenantConfiguration.objects.get(tenant=tenant)
+        cache.set(cache_key, config, timeout=900)  # 15 minutes
+    return config
+```
+
+---
+
+## Common Pitfalls
+
+1. **Forgetting tenant context in Celery tasks** — Always pass `tenant_id` and set thread-local
+2. **Hardcoding limits** — Always use TenantConfiguration fields
+3. **Skipping module checks** — Always use `@require_module` decorator on views
+4. **Direct model queries in views** — Always go through service layer for business logic
+5. **Not using database transactions** — Wrap multi-model operations in `transaction.atomic()`
+6. **Circular imports** — Use string references for FK relationships across apps
+7. **Missing indexes** — Add `class Meta: indexes` for common query patterns
+8. **Not invalidating cache** — Use signals or explicit invalidation when data changes

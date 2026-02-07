@@ -72,7 +72,7 @@ class AuditLog(models.Model):
     
     def save(self, *args, **kwargs):
         """Override save to make audit logs immutable after creation."""
-        if self.pk:
+        if not self._state.adding:
             raise ValueError("Audit logs cannot be modified after creation")
         super().save(*args, **kwargs)
     

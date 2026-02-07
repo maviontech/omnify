@@ -1,0 +1,21 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(findstr:*)",
+      "Bash(Get-ChildItem -Path \"c:\\\\projects\\\\omnify\\\\omnify\\\\apps\" -Recurse -Filter \"*.py\" -Include \"*.py\")",
+      "Bash(Where-Object { $_FullName -match \"migrations\" -and $_Name -ne \"__init__.py\" })",
+      "Bash(Select-Object -ExpandProperty FullName)",
+      "Bash(find:*)",
+      "Bash(python -m pytest:*)",
+      "Bash(pip install:*)",
+      "Bash(DJANGO_SETTINGS_MODULE=omnify.settings.testing python manage.py makemigrations:*)",
+      "Bash(python -m venv:*)",
+      "Bash(.venv/Scripts/python:*)",
+      "Bash(/c/Python313/python.exe:*)",
+      "Bash(c:/projects/omnify/omnify/.venv/Scripts/python.exe --version)",
+      "Bash(.venv/Scripts/pip.exe install:*)",
+      "Bash(.venv/Scripts/python.exe -m pytest:*)"
+    ]
+  }
+}

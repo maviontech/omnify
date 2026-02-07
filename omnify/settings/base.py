@@ -114,6 +114,12 @@ MEDIA_ROOT = BASE_DIR / 'media'
 # Custom user model
 AUTH_USER_MODEL = 'users.User'
 
+# Default primary key field type
+DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Login URL for @login_required redirect
+LOGIN_URL = '/admin/login/'
+
 # REST Framework settings
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
@@ -179,7 +185,7 @@ LOGGING = {
         },
         'file': {
             'class': 'logging.handlers.RotatingFileHandler',
-            'filename': BASE_DIR / 'logs' / 'omnify.log',
+            'filename': str(BASE_DIR / 'logs' / 'omnify.log'),
             'maxBytes': 1024 * 1024 * 100,  # 100 MB
             'backupCount': 10,
             'formatter': 'verbose',
